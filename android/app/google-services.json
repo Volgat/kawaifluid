@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "544117299633",
+    "project_id": "kawa-41565116-dccef",
+    "storage_bucket": "kawa-41565116-dccef.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:544117299633:android:ece360dce71b4f5e4d8590",
+        "android_client_info": {
+          "package_name": "com.kawa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBR6vfpwy1Y6rC8gzZUQZFIyZoP0wkaxE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
