@@ -1,56 +1,71 @@
-# Kawaï Fluid App Blueprint
 
-## Overview
+# Blueprint: Kawaii Fluid - v2
 
-A Flutter application that displays a beautiful and interactive fluid-like animation using shaders. The app will feature a modern and "kawaï" aesthetic, with a focus on visual appeal and user interaction.
+## 1. Overview
 
-## Style, Design, and Features (Current)
+**Purpose:** To transform the "Kawaii Fluid" application from a basic fluid simulation into an engaging and polished relaxation and anxiety relief app that meets Google Play Store standards.
 
-*   **Visuals:**
-    *   A real-time fluid animation background created with a GLSL shader.
-    *   A "kawaï" color palette with pink and purple tones.
-    *   An interactive heart shape that follows the user's mouse/touch input.
-    *   Sparkle effects to enhance the visual appeal.
-*   **Theme:**
-    *   A dark theme by default.
-    *   A theme toggle button (light/dark mode).
-    *   Custom fonts using `google_fonts`.
-*   **Architecture:**
-    *   State management with `provider`.
-    *   Shader rendering with the `shader_buffers` package.
-    *   Navigation with `go_router`.
+**Core Concept:** The app will provide users with a serene, interactive experience centered around beautiful fluid dynamics, enhanced with calming sounds and a delightful user interface.
 
-## Plan for New Features
+## 2. Style, Design, and Features (Current v1)
 
-### 1. UI/UX Revamp based on "KawaiiFLUID" Logo
+This section documents the state of the app that was rejected by Google Play.
 
-To create a more cohesive and branded user experience, I will update the application's UI to match the visual identity of the provided logo.
+*   **Functionality:**
+    *   A single screen displaying a 2D fluid particle simulation using the Flame engine.
+    *   A simple vertical list of emoji icons on the left allows users to switch between six predefined "themes" (Kawaii, Ocean, Fire, etc.).
+    *   Tapping the screen creates a ripple impulse in the fluid.
+*   **UI/UX:**
+    *   Extremely minimalistic UI.
+    *   No text, titles, or instructions.
+    *   Theme selection is done via un-labelled emoji buttons in plain white circles.
+    *   The entire application logic, UI, and game engine code is contained in a single `lib/main.dart` file.
+*   **Design:**
+    *   The background color changes with the theme.
+    *   The particle colors change with the theme.
+    *   No established typography or component styling.
 
-*   **New Color Scheme:** The app's theme will be updated to use the soft blue and white colors from the logo, creating a light, clean, and friendly aesthetic.
-*   **Live Shader Previews:** The gallery will be enhanced to show live, animated thumbnails of each shader instead of static text cards. This provides a much better user experience, allowing users to see the effects at a glance.
-*   **UI Component Styling:** The `AppBar`, `BottomNavigationBar`, and other UI elements will be restyled to align with the new color palette and the "kawaï" theme.
-*   **Typography:** I will select a font from `google_fonts` that is more rounded and playful to match the logo's style.
+## 3. Plan for a Richer Experience (New v2)
 
-### 2. Gallery Page
+This section outlines the plan to address Google's feedback and create a high-quality app.
 
-I will create a "Gallery" page that will display a collection of different shaders.
+### Step 1: Foundational Restructure & UI Overhaul
 
-*   **Content:**
-    *   A grid view of shader thumbnails.
-    *   Tapping on a thumbnail will navigate to a detail page displaying the selected shader in full screen.
-*   **Shaders:**
-    *   I will create 2-3 new shaders with different visual effects (e.g., a "galaxy" shader, a "fire" shader).
-*   **Navigation:**
-    *   I will add a bottom navigation bar to switch between the Home and Gallery pages.
+*   **Project Restructuring:**
+    *   **Goal:** Improve maintainability and scalability.
+    *   **Action:** Decompose the single `main.dart` file into a feature-based structure:
+        *   `main.dart`: App entry point, `MaterialApp` and `provider` setup.
+        *   `providers/`: State management logic (e.g., `theme_provider.dart`).
+        *   `models/`: Data models (e.g., `fluid_theme.dart`).
+        *   `screens/`: UI for each screen (e.g., `home_screen.dart`).
+        *   `widgets/`: Reusable UI components (e.g., `theme_card.dart`).
+        *   `game/`: Flame engine code (`fluid_game.dart`, `fluid_particle.dart`).
+*   **State Management with `provider`:**
+    *   **Goal:** Manage app state efficiently and prevent abrupt UI resets.
+    *   **Action:** Implement `ChangeNotifierProvider` to manage the selected fluid theme and the app's light/dark mode.
+*   **Polished Theming:**
+    *   **Goal:** Create a visually appealing and consistent design.
+    *   **Action:**
+        *   Integrate the `google_fonts` package for elegant typography.
+        *   Define a complete `ThemeData` for both light and dark modes using `ColorScheme.fromSeed`. This will style the app bar, buttons, and other UI components.
+*   **Redesigned Home Screen (`home_screen.dart`):**
+    *   **Goal:** Replace the basic emoji list with an engaging and intuitive interface.
+    *   **Action:**
+        *   Add a welcoming title, such as "Choose Your Moment of Calm".
+        *   Create a `ThemeCard` widget. Each card will represent a fluid theme and display its name (e.g., "Kawaii Blossom," "Ocean Waves").
+        *   Arrange these cards in a visually appealing `GridView`.
+        *   The main fluid simulation will remain as the interactive background.
 
-### 3. Settings Page
+### Step 2: Adding Engaging Content (Future Steps)
 
-I will create a "Settings" page that will allow users to customize the fluid animation in real-time.
+*   **Ambient Sounds:**
+    *   **Goal:** Enhance the relaxing experience.
+    *   **Action:** Integrate a package like `audioplayers` to play calming background music or sounds corresponding to the selected theme (e.g., gentle waves for the Ocean theme).
+*   **Settings Screen:**
+    *   **Goal:** Give users more control.
+    *   **Action:** Create a new settings page to allow users to toggle sound, adjust graphic quality, and access information about the app.
+*   **Guided Breathing Exercise:**
+    *   **Goal:** Add a functional wellness feature.
+    *   **Action:** Overlay a subtle, animated visual guide (e.g., a pulsing circle) on top of the fluid simulation to guide users through simple "inhale, hold, exhale" breathing exercises.
 
-*   **Controls:**
-    *   **Complexity:** A slider to control the complexity of the fluid simulation.
-    *   **Speed:** A slider to adjust the speed of the animation.
-    *   **Toggle Heart:** A switch to show or hide the heart shape.
-    *   **Toggle Sparkles:** A switch to enable or disable the sparkles.
-*   **Navigation:**
-    *   I will add a settings icon to the `AppBar` on the Home Page to navigate to the Settings Page.
+This phased approach will first address the immediate UI/UX shortcomings to meet Google Play's requirements and then build upon that foundation to create a truly valuable and engaging application.

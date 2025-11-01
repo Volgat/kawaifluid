@@ -1,65 +1,219 @@
-import 'dart:math' as math;
-import 'package:flame/events.dart';
-import 'package:flame/game.dart';
-import 'package:flame_forge2d/flame_forge2d.dart';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'dart:math' as math;
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const KawaiFluidApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeProvider(),
+      child: const KawaiFluidApp(),
+    ),
+  );
 }
 
-class KawaiFluidApp extends StatefulWidget {
+class ThemeProvider with ChangeNotifier {
+  ThemeMode _themeMode = ThemeMode.light;
+
+  ThemeMode get themeMode => _themeMode;
+
+  void toggleTheme(bool isDark) {
+    _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
+    notifyListeners();
+  }
+}
+
+class KawaiFluidApp extends StatelessWidget {
   const KawaiFluidApp({super.key});
 
   @override
-  State<KawaiFluidApp> createState() => _KawaiFluidAppState();
+  Widget build(BuildContext context) {
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            brightness: Brightness.light,
+            primaryColor: const Color(0xFFf7a8b8),
+            useMaterial3: true,
+          ),
+          darkTheme: ThemeData(
+            brightness: Brightness.dark,
+            primaryColor: const Color(0xFFf7a8b8),
+            useMaterial3: true,
+          ),
+          themeMode: themeProvider.themeMode,
+          home: const MainScreen(),
+        );
+      },
+    );
+  }
 }
 
-class _KawaiFluidAppState extends State<KawaiFluidApp> {
-  FluidTheme _currentTheme = FluidTheme.kawaii;
-  late KawaiFluidGame _game;
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
 
   @override
-  void initState() {
-    super.initState();
-    _game = KawaiFluidGame(theme: _currentTheme);
-  }
+  State<MainScreen> createState() => _MainScreenState();
+}
 
-  void _changeTheme(FluidTheme newTheme) {
-    setState(() {
-      _currentTheme = newTheme;
-      _game = KawaiFluidGame(theme: _currentTheme);
-    });
-  }
+class _MainScreenState extends State<MainScreen> {
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: _currentTheme.backgroundColor,
-        body: Stack(
+    return Scaffold(
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: const [
+          HomeScreen(),
+          ThemesScreen(),
+          RelaxationScreen(),
+          SettingsScreen(),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _selectedIndex,
+        onDestinationSelected: (index) {
+          setState(() => _selectedIndex = index);
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.water_drop_outlined),
+            selectedIcon: Icon(Icons.water_drop),
+            label: 'Themes',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.spa_outlined),
+            selectedIcon: Icon(Icons.spa),
+            label: 'Relax',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// HOME SCREEN
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GameWidget(game: _game),
-            Positioned(
-              top: 50,
-              left: 20,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildThemeButton('🌸', FluidTheme.kawaii),
-                  const SizedBox(height: 8),
-                  _buildThemeButton('🌊', FluidTheme.ocean),
-                  const SizedBox(height: 8),
-                  _buildThemeButton('🔥', FluidTheme.fire),
-                  const SizedBox(height: 8),
-                  _buildThemeButton('🌌', FluidTheme.galaxy),
-                  const SizedBox(height: 8),
-                  _buildThemeButton('🍬', FluidTheme.candy),
-                  const SizedBox(height: 8),
-                  _buildThemeButton('👻', FluidTheme.neon),
-                ],
+            const SizedBox(height: 20),
+            const Text(
+              '🌸 Kawaii Fluid',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFf7a8b8),
               ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'ASMR Relaxation Therapy',
+              style: TextStyle(fontSize: 18, color: Colors.grey),
+            ),
+            const SizedBox(height: 30),
+            
+            // Quick Start
+            Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FluidSimulationScreen(
+                        theme: FluidTheme.kawaii,
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFf7a8b8), Color(0xFFa7d7c5)],
+                    ),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.play_circle_filled, size: 48, color: Colors.white),
+                      SizedBox(width: 20),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Start Fluid ASMR',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Touch the screen to create mesmerizing waves',
+                              style: TextStyle(fontSize: 14, color: Colors.white70),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            
+            const SizedBox(height: 30),
+            const Text(
+              'How It Works',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            
+            _buildFeature(
+              '👆 Touch Interaction',
+              'Touch anywhere to create fluid ripples and waves',
+              Icons.touch_app,
+            ),
+            _buildFeature(
+              '🌊 Real-Time Simulation',
+              'Advanced shader-based fluid dynamics',
+              Icons.waves,
+            ),
+            _buildFeature(
+              '🎨 Beautiful Themes',
+              '6 stunning color themes to choose from',
+              Icons.palette,
+            ),
+            _buildFeature(
+              '💆 Stress Relief',
+              'Scientifically proven to reduce anxiety',
+              Icons.spa,
             ),
           ],
         ),
@@ -67,89 +221,612 @@ class _KawaiFluidAppState extends State<KawaiFluidApp> {
     );
   }
 
-  Widget _buildThemeButton(String emoji, FluidTheme theme) {
-    final isSelected = _currentTheme == theme;
-    return Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-        color: isSelected ? Colors.white : Colors.white.withAlpha(178),
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: isSelected ? theme.colors.first : Colors.transparent,
-          width: 3,
-        ),
-      ),
-      child: IconButton(
-        onPressed: () => _changeTheme(theme),
-        icon: Text(
-          emoji,
-          style: const TextStyle(fontSize: 24),
-        ),
-        padding: EdgeInsets.zero,
+  Widget _buildFeature(String title, String description, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFf7a8b8).withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: const Color(0xFFf7a8b8), size: 28),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  description,
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
+// THEMES SCREEN
+class ThemesScreen extends StatelessWidget {
+  const ThemesScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Fluid Themes',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Choose your favorite color palette',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: GridView.count(
+              crossAxisCount: 2,
+              padding: const EdgeInsets.all(16),
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              children: [
+                _buildThemeCard(context, FluidTheme.kawaii, '🌸 Kawaii',
+                    'Soft Pink & Mint', const Color(0xFFf7a8b8)),
+                _buildThemeCard(context, FluidTheme.ocean, '🌊 Ocean',
+                    'Deep Blue Waves', const Color(0xFF0099CC)),
+                _buildThemeCard(context, FluidTheme.fire, '🔥 Fire',
+                    'Warm Flames', const Color(0xFFFF6600)),
+                _buildThemeCard(context, FluidTheme.galaxy, '🌌 Galaxy',
+                    'Cosmic Purple', const Color(0xFF660099)),
+                _buildThemeCard(context, FluidTheme.candy, '🍬 Candy',
+                    'Sweet Pink', const Color(0xFFFF69B4)),
+                _buildThemeCard(context, FluidTheme.sunset, '🌅 Sunset',
+                    'Orange & Gold', const Color(0xFFFF8C00)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildThemeCard(BuildContext context, FluidTheme theme, String name,
+      String description, Color color) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FluidSimulationScreen(theme: theme),
+            ),
+          );
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [color, color.withOpacity(0.6)],
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(name.split(' ')[0], style: const TextStyle(fontSize: 48)),
+              const SizedBox(height: 8),
+              Text(
+                name.split(' ')[1],
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                description,
+                style: const TextStyle(fontSize: 14, color: Colors.white70),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// RELAXATION SCREEN
+class RelaxationScreen extends StatefulWidget {
+  const RelaxationScreen({super.key});
+
+  @override
+  State<RelaxationScreen> createState() => _RelaxationScreenState();
+}
+
+class _RelaxationScreenState extends State<RelaxationScreen> {
+  bool _isBreathing = false;
+  int _breathCount = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Relaxation Guide',
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Combine fluid visuals with breathing',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 30),
+            
+            Card(
+              elevation: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    const Icon(Icons.air, size: 64, color: Color(0xFFa7d7c5)),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Breathing Exercise',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _isBreathing
+                          ? 'Breathe in... Hold... Breathe out...'
+                          : 'Follow the guided breathing',
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    if (_isBreathing)
+                      Text(
+                        'Breath Count: $_breathCount',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFf7a8b8),
+                        ),
+                      ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _isBreathing = !_isBreathing;
+                          if (!_isBreathing) _breathCount = 0;
+                        });
+                        if (_isBreathing) _startBreathing();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFf7a8b8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 16,
+                        ),
+                      ),
+                      child: Text(
+                        _isBreathing ? 'Stop' : 'Start Exercise',
+                        style: const TextStyle(fontSize: 18, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            
+            const SizedBox(height: 30),
+            const Text(
+              'Quick Tips',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            
+            _buildTip('💆 Daily Practice',
+                'Use for 5-10 minutes daily for best results'),
+            _buildTip('🌙 Before Bed',
+                'Perfect for winding down before sleep'),
+            _buildTip('☕ Break Time',
+                'Quick stress relief during work breaks'),
+            _buildTip('🎧 With Music',
+                'Add calming music for enhanced relaxation'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _startBreathing() {
+    if (!_isBreathing) return;
+    Future.delayed(const Duration(seconds: 4), () {
+      if (_isBreathing && mounted) {
+        setState(() => _breathCount++);
+        _startBreathing();
+      }
+    });
+  }
+
+  Widget _buildTip(String title, String description) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              description,
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// SETTINGS SCREEN
+class SettingsScreen extends StatefulWidget {
+  const SettingsScreen({super.key});
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  double _fluidSpeed = 0.5;
+  double _touchSensitivity = 1.0;
+
+  @override
+  Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          const Text(
+            'Settings',
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 30),
+          
+          const Text(
+            'Appearance',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          Card(
+            child: SwitchListTile(
+              title: const Text('Dark Mode'),
+              value: themeProvider.themeMode == ThemeMode.dark,
+              onChanged: (value) {
+                themeProvider.toggleTheme(value);
+              },
+            ),
+          ),
+
+          const SizedBox(height: 30),
+          const Text(
+            'Simulation',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Fluid Speed: ${_fluidSpeed.toStringAsFixed(1)}x',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  Slider(
+                    value: _fluidSpeed,
+                    min: 0.1,
+                    max: 2.0,
+                    divisions: 19,
+                    onChanged: (value) => setState(() => _fluidSpeed = value),
+                  ),
+                  const Text(
+                    'Controls animation speed',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 12),
+          
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Touch Sensitivity: ${_touchSensitivity.toStringAsFixed(1)}x',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  Slider(
+                    value: _touchSensitivity,
+                    min: 0.5,
+                    max: 2.0,
+                    divisions: 15,
+                    onChanged: (value) =>
+                        setState(() => _touchSensitivity = value),
+                  ),
+                  const Text(
+                    'Adjust touch response strength',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 30),
+          const Text(
+            'About',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          
+          const Card(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Kawaii Fluid: ASMR Therapy',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 8),
+                  Text('Version 2.0.0'),
+                  SizedBox(height: 8),
+                  Text(
+                    'Advanced fluid simulation app using real-time shaders for anxiety relief and relaxation. Touch the screen to create mesmerizing waves and patterns.',
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+
+// FLUID SIMULATION SCREEN avec Shaders
+class FluidSimulationScreen extends StatefulWidget {
+  final FluidTheme theme;
+
+  const FluidSimulationScreen({super.key, required this.theme});
+
+  @override
+  State<FluidSimulationScreen> createState() => _FluidSimulationScreenState();
+}
+
+class _FluidSimulationScreenState extends State<FluidSimulationScreen>
+    with SingleTickerProviderStateMixin {
+  late Ticker _ticker;
+  double _time = 0;
+  Offset _touchPosition = const Offset(0.5, 0.5);
+  double _touchStrength = 0.0;
+  ui.FragmentShader? _shader;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadShader();
+    _ticker = createTicker((elapsed) {
+      setState(() {
+        _time = elapsed.inMilliseconds / 1000.0;
+        _touchStrength *= 0.95; // Fade out touch effect
+      });
+    });
+    _ticker.start();
+  }
+
+  Future<void> _loadShader() async {
+    final program = await ui.FragmentProgram.fromAsset('assets/shaders/fluid.frag');
+    setState(() {
+      _shader = program.fragmentShader();
+    });
+  }
+
+  @override
+  void dispose() {
+    _ticker.dispose();
+    _shader?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+          GestureDetector(
+            onPanDown: (details) => _updateTouch(details.localPosition),
+            onPanUpdate: (details) => _updateTouch(details.localPosition),
+            child: CustomPaint(
+              painter: _shader != null
+                  ? FluidPainter(
+                      shader: _shader!,
+                      time: _time,
+                      touch: _touchPosition,
+                      touchStrength: _touchStrength,
+                      theme: widget.theme,
+                    )
+                  : null,
+              child: Container(
+                color: widget.theme.backgroundColor,
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    style: IconButton.styleFrom(backgroundColor: Colors.black26),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black26,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      widget.theme.displayName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _updateTouch(Offset position) {
+    final size = MediaQuery.of(context).size;
+    setState(() {
+      _touchPosition = Offset(
+        position.dx / size.width,
+        position.dy / size.height,
+      );
+      _touchStrength = 1.0;
+    });
+  }
+}
+
+class FluidPainter extends CustomPainter {
+  final ui.FragmentShader shader;
+  final double time;
+  final Offset touch;
+  final double touchStrength;
+  final FluidTheme theme;
+
+  FluidPainter({
+    required this.shader,
+    required this.time,
+    required this.touch,
+    required this.touchStrength,
+    required this.theme,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    shader.setFloat(0, size.width);
+    shader.setFloat(1, size.height);
+    shader.setFloat(2, time);
+    shader.setFloat(3, touch.dx);
+    shader.setFloat(4, touch.dy);
+    shader.setFloat(5, touchStrength);
+    
+    // Couleurs du thème
+    final colors = theme.colors;
+    shader.setFloat(6, colors[0].red / 255);
+    shader.setFloat(7, colors[0].green / 255);
+    shader.setFloat(8, colors[0].blue / 255);
+    shader.setFloat(9, colors[1].red / 255);
+    shader.setFloat(10, colors[1].green / 255);
+    shader.setFloat(11, colors[1].blue / 255);
+    shader.setFloat(12, colors[2].red / 255);
+    shader.setFloat(13, colors[2].green / 255);
+    shader.setFloat(14, colors[2].blue / 255);
+
+    final paint = Paint()..shader = shader;
+    canvas.drawRect(Offset.zero & size, paint);
+  }
+
+  @override
+  bool shouldRepaint(FluidPainter oldDelegate) => true;
+}
+
+// FLUID THEMES
 enum FluidTheme {
   kawaii,
   ocean,
   fire,
   galaxy,
   candy,
-  neon;
+  sunset;
 
-  List<Color> get colors {
+  String get displayName {
     switch (this) {
       case FluidTheme.kawaii:
-        return [
-          const Color(0xFFa7d7c5),
-          const Color(0xFFf7a8b8),
-          const Color(0xFFc9b7db),
-          const Color(0xFFf5d491),
-          const Color(0xFFa1cde3),
-        ];
+        return '🌸 Kawaii';
       case FluidTheme.ocean:
-        return [
-          const Color(0xFF006994),
-          const Color(0xFF0099CC),
-          const Color(0xFF66CCCC),
-          const Color(0xFF99CCFF),
-          const Color(0xFFCCE5FF),
-        ];
+        return '🌊 Ocean';
       case FluidTheme.fire:
-        return [
-          const Color(0xFFFF0000),
-          const Color(0xFFFF6600),
-          const Color(0xFFFF9900),
-          const Color(0xFFFFCC00),
-          const Color(0xFFFFFF00),
-        ];
+        return '🔥 Fire';
       case FluidTheme.galaxy:
-        return [
-          const Color(0xFF1a0033),
-          const Color(0xFF330066),
-          const Color(0xFF660099),
-          const Color(0xFF9933CC),
-          const Color(0xFFCC66FF),
-        ];
+        return '🌌 Galaxy';
       case FluidTheme.candy:
-        return [
-          const Color(0xFFFF69B4),
-          const Color(0xFFFF1493),
-          const Color(0xFFFF6EC7),
-          const Color(0xFFFFB6C1),
-          const Color(0xFFFFC0CB),
-        ];
-      case FluidTheme.neon:
-        return [
-          const Color(0xFF00FF00),
-          const Color(0xFF00FFFF),
-          const Color(0xFFFF00FF),
-          const Color(0xFFFFFF00),
-          const Color(0xFFFF0080),
-        ];
+        return '🍬 Candy';
+      case FluidTheme.sunset:
+        return '🌅 Sunset';
     }
   }
 
@@ -165,227 +842,49 @@ enum FluidTheme {
         return const Color(0xFF0a0014);
       case FluidTheme.candy:
         return const Color(0xFFFFE4E1);
-      case FluidTheme.neon:
-        return const Color(0xFF000000);
+      case FluidTheme.sunset:
+        return const Color(0xFF2a1810);
     }
   }
 
-  double get gravity {
+  List<Color> get colors {
     switch (this) {
       case FluidTheme.kawaii:
-        return 15.0;
+        return [
+          const Color(0xFFf7a8b8),
+          const Color(0xFFa7d7c5),
+          const Color(0xFFc9b7db),
+        ];
       case FluidTheme.ocean:
-        return 8.0;
+        return [
+          const Color(0xFF0099CC),
+          const Color(0xFF66CCCC),
+          const Color(0xFF0066AA),
+        ];
       case FluidTheme.fire:
-        return 20.0;
+        return [
+          const Color(0xFFFF6600),
+          const Color(0xFFFF0000),
+          const Color(0xFFFFCC00),
+        ];
       case FluidTheme.galaxy:
-        return 5.0;
+        return [
+          const Color(0xFF660099),
+          const Color(0xFF9933CC),
+          const Color(0xFF330066),
+        ];
       case FluidTheme.candy:
-        return 12.0;
-      case FluidTheme.neon:
-        return 18.0;
+        return [
+          const Color(0xFFFF69B4),
+          const Color(0xFFFFB6C1),
+          const Color(0xFFFF1493),
+        ];
+      case FluidTheme.sunset:
+        return [
+          const Color(0xFFFF8C00),
+          const Color(0xFFFF6347),
+          const Color(0xFFFFD700),
+        ];
     }
-  }
-
-  double get restitution {
-    switch (this) {
-      case FluidTheme.kawaii:
-        return 0.6;
-      case FluidTheme.ocean:
-        return 0.2;
-      case FluidTheme.fire:
-        return 0.8;
-      case FluidTheme.galaxy:
-        return 0.9;
-      case FluidTheme.candy:
-        return 0.7;
-      case FluidTheme.neon:
-        return 0.75;
-    }
-  }
-
-  double get impulseStrength {
-    switch (this) {
-      case FluidTheme.kawaii:
-        return 100.0;
-      case FluidTheme.ocean:
-        return 60.0;
-      case FluidTheme.fire:
-        return 150.0;
-      case FluidTheme.galaxy:
-        return 80.0;
-      case FluidTheme.candy:
-        return 120.0;
-      case FluidTheme.neon:
-        return 140.0;
-    }
-  }
-
-  int get particleCount {
-    switch (this) {
-      case FluidTheme.kawaii:
-        return 300;
-      case FluidTheme.ocean:
-        return 250;
-      case FluidTheme.fire:
-        return 350;
-      case FluidTheme.galaxy:
-        return 400;
-      case FluidTheme.candy:
-        return 280;
-      case FluidTheme.neon:
-        return 320;
-    }
-  }
-
-  double get ballSize {
-    switch (this) {
-      case FluidTheme.kawaii:
-        return 1.2;
-      case FluidTheme.ocean:
-        return 1.4;
-      case FluidTheme.fire:
-        return 0.9;
-      case FluidTheme.galaxy:
-        return 0.8;
-      case FluidTheme.candy:
-        return 1.1;
-      case FluidTheme.neon:
-        return 1.0;
-    }
-  }
-}
-
-class KawaiFluidGame extends Forge2DGame with TapCallbacks {
-  static final math.Random _random = math.Random();
-  final FluidTheme theme;
-
-  KawaiFluidGame({required this.theme})
-      : super(
-          gravity: Vector2(0, theme.gravity),
-        );
-
-  @override
-  Future<void> onLoad() async {
-    await super.onLoad();
-    
-    await Future.delayed(const Duration(milliseconds: 100));
-    
-    final screenSize = camera.viewport.virtualSize;
-    final worldWidth = screenSize.x / 10;
-    final worldHeight = screenSize.y / 10;
-    
-    camera.viewfinder.zoom = 10;
-    camera.viewfinder.position = Vector2(worldWidth / 2, worldHeight / 2);
-    
-    _createBoundaries(worldWidth, worldHeight);
-    _createFluidParticles(worldWidth, worldHeight);
-  }
-
-  void _createBoundaries(double width, double height) {
-    final vertices = <Vector2>[
-      Vector2(0, 0),
-      Vector2(width, 0),
-      Vector2(width, height),
-      Vector2(0, height),
-    ];
-
-    final chain = ChainShape()..createLoop(vertices);
-    final fixtureDef = FixtureDef(chain, friction: 0.2);
-    world.createBody(BodyDef()..type = BodyType.static).createFixture(fixtureDef);
-  }
-
-  void _createFluidParticles(double width, double height) {
-    for (var i = 0; i < theme.particleCount; i++) {
-      final position = Vector2(
-        _random.nextDouble() * width,
-        _random.nextDouble() * height,
-      );
-      final color = theme.colors[_random.nextInt(theme.colors.length)];
-      add(FluidParticle(
-        initialPosition: position,
-        color: color,
-        radius: theme.ballSize,
-        restitution: theme.restitution,
-      ));
-    }
-  }
-
-  @override
-  void onTapDown(TapDownEvent event) {
-    super.onTapDown(event);
-    final worldPos = camera.globalToLocal(event.localPosition);
-    _applyFluidImpulse(worldPos);
-  }
-
-  void _applyFluidImpulse(Vector2 worldPosition) {
-    const radius = 8.0;
-    final aabb = AABB()
-      ..lowerBound.setFrom(worldPosition - Vector2.all(radius))
-      ..upperBound.setFrom(worldPosition + Vector2.all(radius));
-
-    world.queryAABB(FluidParticleQueryCallback(worldPosition, theme), aabb);
-  }
-}
-
-class FluidParticleQueryCallback extends QueryCallback {
-  final Vector2 worldPosition;
-  final FluidTheme theme;
-
-  FluidParticleQueryCallback(this.worldPosition, this.theme);
-
-  @override
-  bool reportFixture(Fixture fixture) {
-    final body = fixture.body;
-    if (body.bodyType == BodyType.dynamic) {
-      final direction = body.position - worldPosition;
-      final distance = direction.length;
-      
-      if (distance < 8.0 && distance > 0.1) {
-        direction.normalize();
-        final forceMagnitude = (8.0 - distance) / 8.0 * theme.impulseStrength;
-        final impulse = direction * body.mass * forceMagnitude;
-        body.applyLinearImpulse(impulse);
-        body.setAwake(true);
-      }
-    }
-    return true;
-  }
-}
-
-class FluidParticle extends BodyComponent {
-  final Vector2 initialPosition;
-  final Color color;
-  final double radius;
-  final double restitution;
-
-  FluidParticle({
-    required this.initialPosition,
-    required this.color,
-    required this.radius,
-    required this.restitution,
-  });
-
-  @override
-  void onMount() {
-    super.onMount();
-    paint.color = color;
-  }
-
-  @override
-  Body createBody() {
-    final shape = CircleShape()..radius = radius;
-    final fixtureDef = FixtureDef(
-      shape,
-      restitution: restitution,
-      density: 1.0,
-      friction: 0.3,
-    );
-    final bodyDef = BodyDef(
-      userData: this,
-      position: initialPosition,
-      type: BodyType.dynamic,
-    );
-    return world.createBody(bodyDef)..createFixture(fixtureDef);
   }
 }
