@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "544117299633",
-    "project_id": "kawa-41565116-dccef",
-    "storage_bucket": "kawa-41565116-dccef.firebasestorage.app"
+    "project_number": "493448731806",
+    "project_id": "kawaiflow-73897",
+    "storage_bucket": "kawaiflow-73897.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:544117299633:android:ece360dce71b4f5e4d8590",
+        "mobilesdk_app_id": "1:493448731806:android:85d19eae4af6e0df2b6f8f",
         "android_client_info": {
-          "package_name": "com.kawa"
+          "package_name": "com.ame.kawaiflow"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBBR6vfpwy1Y6rC8gzZUQZFIyZoP0wkaxE"
+          "current_key": "AIzaSyCphdXIjSmCmYagm3K1_suJ4IMWbqKYulM"
         }
       ],
       "services": {

@@ -1,7 +1,6 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'dart:math' as math;
 import 'package:provider/provider.dart';
 
 void main() {
@@ -132,24 +131,24 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(fontSize: 18, color: Colors.grey),
             ),
             const SizedBox(height: 30),
-            
+
             // Quick Start
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const FluidSimulationScreen(
-                        theme: FluidTheme.kawaii,
-                      ),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FluidSimulationScreen(
+                      theme: FluidTheme.kawaii,
                     ),
-                  );
-                },
+                  ),
+                );
+              },
+              child: Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 child: Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
@@ -160,7 +159,8 @@ class HomeScreen extends StatelessWidget {
                   ),
                   child: const Row(
                     children: [
-                      Icon(Icons.play_circle_filled, size: 48, color: Colors.white),
+                      Icon(Icons.play_circle_filled,
+                          size: 48, color: Colors.white),
                       SizedBox(width: 20),
                       Expanded(
                         child: Column(
@@ -177,7 +177,8 @@ class HomeScreen extends StatelessWidget {
                             SizedBox(height: 4),
                             Text(
                               'Touch the screen to create mesmerizing waves',
-                              style: TextStyle(fontSize: 14, color: Colors.white70),
+                              style: TextStyle(
+                                  fontSize: 14, color: Colors.white70),
                             ),
                           ],
                         ),
@@ -187,14 +188,14 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 30),
             const Text(
               'How It Works',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
+
             _buildFeature(
               '👆 Touch Interaction',
               'Touch anywhere to create fluid ripples and waves',
@@ -229,7 +230,7 @@ class HomeScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFf7a8b8).withOpacity(0.2),
+              color: const Color(0xFFf7a8b8).withAlpha(51),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: const Color(0xFFf7a8b8), size: 28),
@@ -334,7 +335,7 @@ class ThemesScreen extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [color, color.withOpacity(0.6)],
+              colors: [color, color.withAlpha(153)],
             ),
           ),
           child: Column(
@@ -393,7 +394,6 @@ class _RelaxationScreenState extends State<RelaxationScreen> {
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             const SizedBox(height: 30),
-            
             Card(
               elevation: 4,
               child: Padding(
@@ -404,7 +404,8 @@ class _RelaxationScreenState extends State<RelaxationScreen> {
                     const SizedBox(height: 16),
                     const Text(
                       'Breathing Exercise',
-                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -442,29 +443,26 @@ class _RelaxationScreenState extends State<RelaxationScreen> {
                       ),
                       child: Text(
                         _isBreathing ? 'Stop' : 'Start Exercise',
-                        style: const TextStyle(fontSize: 18, color: Colors.white),
+                        style:
+                            const TextStyle(fontSize: 18, color: Colors.white),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-            
             const SizedBox(height: 30),
             const Text(
               'Quick Tips',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            
             _buildTip('💆 Daily Practice',
                 'Use for 5-10 minutes daily for best results'),
-            _buildTip('🌙 Before Bed',
-                'Perfect for winding down before sleep'),
-            _buildTip('☕ Break Time',
-                'Quick stress relief during work breaks'),
-            _buildTip('🎧 With Music',
-                'Add calming music for enhanced relaxation'),
+            _buildTip('🌙 Before Bed', 'Perfect for winding down before sleep'),
+            _buildTip('☕ Break Time', 'Quick stress relief during work breaks'),
+            _buildTip(
+                '🎧 With Music', 'Add calming music for enhanced relaxation'),
           ],
         ),
       ),
@@ -530,7 +528,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 30),
-          
           const Text(
             'Appearance',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -545,14 +542,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
             ),
           ),
-
           const SizedBox(height: 30),
           const Text(
             'Simulation',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -578,9 +573,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
           ),
-          
           const SizedBox(height: 12),
-          
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -607,14 +600,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
           ),
-          
           const SizedBox(height: 30),
           const Text(
             'About',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          
           const Card(
             child: Padding(
               padding: EdgeInsets.all(16),
@@ -641,7 +632,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 }
-
 
 // FLUID SIMULATION SCREEN avec Shaders
 class FluidSimulationScreen extends StatefulWidget {
@@ -675,7 +665,8 @@ class _FluidSimulationScreenState extends State<FluidSimulationScreen>
   }
 
   Future<void> _loadShader() async {
-    final program = await ui.FragmentProgram.fromAsset('assets/shaders/fluid.frag');
+    final program =
+        await ui.FragmentProgram.fromAsset('assets/shaders/fluid.frag');
     setState(() {
       _shader = program.fragmentShader();
     });
@@ -720,7 +711,8 @@ class _FluidSimulationScreenState extends State<FluidSimulationScreen>
                   IconButton(
                     onPressed: () => Navigator.pop(context),
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    style: IconButton.styleFrom(backgroundColor: Colors.black26),
+                    style:
+                        IconButton.styleFrom(backgroundColor: Colors.black26),
                   ),
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -783,18 +775,18 @@ class FluidPainter extends CustomPainter {
     shader.setFloat(3, touch.dx);
     shader.setFloat(4, touch.dy);
     shader.setFloat(5, touchStrength);
-    
+
     // Couleurs du thème
     final colors = theme.colors;
-    shader.setFloat(6, colors[0].red / 255);
-    shader.setFloat(7, colors[0].green / 255);
-    shader.setFloat(8, colors[0].blue / 255);
-    shader.setFloat(9, colors[1].red / 255);
-    shader.setFloat(10, colors[1].green / 255);
-    shader.setFloat(11, colors[1].blue / 255);
-    shader.setFloat(12, colors[2].red / 255);
-    shader.setFloat(13, colors[2].green / 255);
-    shader.setFloat(14, colors[2].blue / 255);
+    shader.setFloat(6, colors[0].red / 255.0);
+    shader.setFloat(7, colors[0].green / 255.0);
+    shader.setFloat(8, colors[0].blue / 255.0);
+    shader.setFloat(9, colors[1].red / 255.0);
+    shader.setFloat(10, colors[1].green / 255.0);
+    shader.setFloat(11, colors[1].blue / 255.0);
+    shader.setFloat(12, colors[2].red / 255.0);
+    shader.setFloat(13, colors[2].green / 255.0);
+    shader.setFloat(14, colors[2].blue / 255.0);
 
     final paint = Paint()..shader = shader;
     canvas.drawRect(Offset.zero & size, paint);
