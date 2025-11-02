@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
-import 'package:kawai_app/services/gemini_service.dart';
-import 'package:kawai_app/services/simulation_cache.dart';
+import 'package:kawaiflow/services/gemini_service.dart';
+import 'package:kawaiflow/services/simulation_cache.dart';
 
 class SimulationService {
   final GeminiService _geminiService;

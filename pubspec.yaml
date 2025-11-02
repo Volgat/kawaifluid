@@ -3,7 +3,7 @@ description: A fluid simulation app for anxiety relief.
 
 publish_to: 'none'
 
-version: 1.0.0+3
+version: 1.0.0+1
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
@@ -21,7 +21,6 @@ dependencies:
   flame_forge2d: ^0.19.2+1
   firebase_core: ^4.2.0
   firebase_ai: ^3.4.0
-  motion_sensors: ^0.1.0
 
 dev_dependencies:
   flutter_test:

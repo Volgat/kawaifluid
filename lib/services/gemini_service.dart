@@ -3,7 +3,7 @@ import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter/material.dart';
 
 class GeminiService {
-  final _model = FirebaseVertexAI.instance.generativeModel(model: 'gemini-1.5-flash');
+  final _model = FirebaseAI.googleAI().generativeModel(model: 'gemini-1.5-flash');
 
   Future<List<Color>> generateFluidColors(String themeName) async {
     try {
@@ -13,7 +13,7 @@ class GeminiService {
       final hexCodes = response.text!.split(',').map((e) => e.trim()).toList();
       return hexCodes.map((hex) => _hexToColor(hex)).toList();
     } catch (e) {
-      print('Error generating colors: $e');
+      debugPrint('Error generating colors: $e');
       // Return default colors on error
       return [Colors.blue, Colors.green, Colors.purple];
     }

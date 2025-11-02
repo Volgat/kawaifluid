@@ -2,8 +2,14 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
@@ -778,15 +784,15 @@ class FluidPainter extends CustomPainter {
 
     // Couleurs du thème
     final colors = theme.colors;
-    shader.setFloat(6, colors[0].red / 255.0);
-    shader.setFloat(7, colors[0].green / 255.0);
-    shader.setFloat(8, colors[0].blue / 255.0);
-    shader.setFloat(9, colors[1].red / 255.0);
-    shader.setFloat(10, colors[1].green / 255.0);
-    shader.setFloat(11, colors[1].blue / 255.0);
-    shader.setFloat(12, colors[2].red / 255.0);
-    shader.setFloat(13, colors[2].green / 255.0);
-    shader.setFloat(14, colors[2].blue / 255.0);
+    shader.setFloat(6, ((colors[0].toARGB32() >> 16) & 0xFF) / 255.0);
+    shader.setFloat(7, ((colors[0].toARGB32() >> 8) & 0xFF) / 255.0);
+    shader.setFloat(8, (colors[0].toARGB32() & 0xFF) / 255.0);
+    shader.setFloat(9, ((colors[1].toARGB32() >> 16) & 0xFF) / 255.0);
+    shader.setFloat(10, ((colors[1].toARGB32() >> 8) & 0xFF) / 255.0);
+    shader.setFloat(11, (colors[1].toARGB32() & 0xFF) / 255.0);
+    shader.setFloat(12, ((colors[2].toARGB32() >> 16) & 0xFF) / 255.0);
+    shader.setFloat(13, ((colors[2].toARGB32() >> 8) & 0xFF) / 255.0);
+    shader.setFloat(14, (colors[2].toARGB32() & 0xFF) / 255.0);
 
     final paint = Paint()..shader = shader;
     canvas.drawRect(Offset.zero & size, paint);
